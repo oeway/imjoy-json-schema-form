@@ -62,7 +62,9 @@
                     _rintf: true
                 }
             })
-            console.log(form.docs)
+            form.get_data().then(data => {
+                console.log("form data", data);
+            })
         });
     </script>
 </body>
