@@ -1,6 +1,42 @@
-# Getting Started with Create React App
+# ImJoy JSON Schema Form
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is an ImJoy plugin for creating forms with JSON Schema.
+
+## Usage
+
+Use it in Jupyter Notebook at https://jupyter.imjoy.io
+
+```python
+from imjoy_rpc import api
+
+async def setup():  
+    async def callback(data):
+        api.alert(str(data))
+        await fm.close()
+
+    fm = await api.showDialog(
+        src="http://localhost:3000/",
+        config={
+            "callback": callback,
+            "schema": {
+                "title": "Test Form",
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "title": "Name"
+                    },
+                    "age": {
+                        "type": "number",
+                        "title": "Age"
+                    }
+                }
+            }
+        }
+    )
+
+api.export({"setup": setup})
+```
 
 ## Available Scripts
 

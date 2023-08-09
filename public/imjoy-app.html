@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ImJoy App</title>
+    <script src="https://lib.imjoy.io/imjoy-loader.js"></script>
+</head>
+
+<body>
+    <div id="window-container"></div>
+    <div id="menu-container"></div>
+    <script>
+        loadImJoyBasicApp({
+            process_url_query: true,
+            show_window_title: false,
+            show_progress_bar: true,
+            show_empty_window: true,
+            menu_style: { position: "absolute", right: 0, top: "2px" },
+            window_style: { width: '100%', height: '100%' },
+            main_container: null,
+            menu_container: "menu-container",
+            window_manager_container: "window-container",
+            imjoy_api: {} // override some imjoy API functions here
+        }).then(async app => {
+            // get the api object from the root plugin
+            const api = app.imjoy.api;
+            // get href without /imjoy-app.html
+            const currentLocationRoot = window.location.href.replace(/\/imjoy-app.html.*/, '');
+             // Define the JSON schema
+             const testSchema = {
+                "title": "Test Form",
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "title": "Name",
+                        // limit the length of the string to 5 characters
+                        "maxLength": 5,
+                    },
+                    "age": {
+                        "type": "number",
+                        "title": "Age"
+                    }
+                }
+            };
+            const form = await api.showDialog({ src: `${currentLocationRoot}/index.html`, name: "Form",
+                config: {
+                    schema: testSchema,
+                    ui_schema: { /* custom UI schema */ },
+                    submit_label: "OK",
+                    callback(data){
+                        alert(`Received form data: ${JSON.stringify(data)}`);
+                    },
+                    onchange(data){
+                        console.log("form data changed", data);
+                    },
+                    onerror(errors){
+                        console.error("form error", errors);
+                    },
+                    _rintf: true
+                }
+            })
+            console.log(form.docs)
+        });
+    </script>
+</body>
+
+</html>
