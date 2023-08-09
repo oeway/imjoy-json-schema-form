@@ -148,7 +148,7 @@ function App() {
         imjoyAPI.current.close();
       }
     }
-  }, [callbackRef]);
+  }, [callbackRef, closeOnSubmit, imjoyAPI]);
 
   return (
     <div className="App">
