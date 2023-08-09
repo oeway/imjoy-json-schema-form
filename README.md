@@ -5,7 +5,35 @@ This is an ImJoy plugin for creating forms with JSON Schema.
 ## Usage
 
 Use it in Jupyter Notebook at https://jupyter.imjoy.io
+```python
+async def setup():  
+    fm = await api.showDialog(
+        src="https://oeway.github.io/imjoy-json-schema-form/",
+        config={
+            "schema": {
+                "title": "Test Form",
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "title": "Name",
+                        "maxLength": 3,
+                    },
+                    "age": {
+                        "type": "number",
+                        "title": "Age"
+                    }
+                }
+            }
+        }
+    )
+    form = await fm.get_data()
+    await api.alert(str(form))
 
+api.export({"setup": setup})
+```
+
+You can also use `callback` to run a function when the form is submitted:
 ```python
 from imjoy_rpc import api
 
@@ -17,6 +45,7 @@ async def setup():
     fm = await api.showDialog(
         src="https://oeway.github.io/imjoy-json-schema-form/",
         config={
+            "_rintf": true,
             "callback": callback,
             "schema": {
                 "title": "Test Form",
@@ -37,6 +66,8 @@ async def setup():
 
 api.export({"setup": setup})
 ```
+
+Note that we need to add `"_rintf": true,` to be able to run the callback function multiple times.
 
 ## Available Scripts
 

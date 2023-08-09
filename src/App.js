@@ -106,6 +106,7 @@ function useImJoyPlugin() {
   const onchangeRef = useRef(null);
   const onerrorRef = useRef(null);
   const imjoyAPI = useRef(null);
+  const promise = useRef(null);
 
   useEffect(() => {
     if (window.self !== window.top && !window.loadImJoy) {
@@ -129,24 +130,34 @@ function useImJoyPlugin() {
             if (ctx.config.onerror) onerrorRef.current = ctx.config.onerror;
             if (ctx.config.close_on_submit) setCloseOnSubmit(ctx.config.close_on_submit);
           },
+          async get_data() {
+            return await new Promise((resolve) => {
+              promise.current = resolve
+            });
+          },
         });
         
       }).catch(err => { console.error(err); });
     }
   }, []);
 
-  return { schema, uiSchema, submitLabel, callbackRef, onchangeRef, onerrorRef, imjoyAPI, closeOnSubmit };
+  return { schema, uiSchema, submitLabel, callbackRef, onchangeRef, onerrorRef, imjoyAPI, closeOnSubmit, promise };
 }
 
 function App() {
-  const { schema, uiSchema, submitLabel, callbackRef, onchangeRef, onerrorRef, imjoyAPI, closeOnSubmit } = useImJoyPlugin();
+  const { schema, uiSchema, submitLabel, callbackRef, onchangeRef, onerrorRef, imjoyAPI, closeOnSubmit, promise } = useImJoyPlugin();
 
   const handleSubmit = useCallback((form) => {
     if (callbackRef.current){
       callbackRef.current(form);
-      if(closeOnSubmit && form.status === "submitted"){
-        imjoyAPI.current.close();
-      }
+    }
+  
+    if(promise.current){ 
+      promise.current(form);
+      imjoyAPI.current.close();
+    }
+    else if(closeOnSubmit && form.status === "submitted"){
+      imjoyAPI.current.close();
     }
   }, [callbackRef, closeOnSubmit, imjoyAPI]);
 
