@@ -11,11 +11,11 @@ from imjoy_rpc import api
 
 async def setup():  
     async def callback(data):
-        api.alert(str(data))
+        await api.alert(str(data))
         await fm.close()
 
     fm = await api.showDialog(
-        src="http://localhost:3000/",
+        src="https://oeway.github.io/imjoy-json-schema-form/",
         config={
             "callback": callback,
             "schema": {

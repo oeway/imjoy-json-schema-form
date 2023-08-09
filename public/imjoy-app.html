@@ -27,7 +27,7 @@
             // get the api object from the root plugin
             const api = app.imjoy.api;
             // get href without /imjoy-app.html
-            const currentLocationRoot = window.location.href.replace(/\/imjoy-app.html.*/, '');
+            const currentLocationRoot = window.location.href.split(/\/imjoy-app/)[0];
              // Define the JSON schema
              const testSchema = {
                 "title": "Test Form",

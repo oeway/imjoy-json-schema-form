@@ -40,11 +40,22 @@ Use the \`api.showDialog\` or \`api.createWindow\` method to display the custom 
 
 \`\`\`javascript
 const form = await api.showDialog({
-    src: \`\${currentLocationRoot}/index.html\`,
+    src: "https://oeway.github.io/imjoy-json-schema-form/",
     name: "Form",
     config: {
         schema: testSchema,
-        /* Other configuration options */
+        ui_schema: {},
+        submit_label: "Submit",
+        close_on_submit: true,
+        callback(data){
+            alert(\`Received form data: \${JSON.stringify(data)}\`);
+        },
+        onchange(data){
+            console.log("form data changed", data);
+        },
+        onerror(errors){
+            console.error("form error", errors);
+        },
     }
 });
 \`\`\`
@@ -53,7 +64,7 @@ const form = await api.showDialog({
 
 \`\`\`javascript
 const window = await api.createWindow({
-    src: \`\${currentLocationRoot}/index.html\`,
+    src: "https://oeway.github.io/imjoy-json-schema-form/",
     name: "Window",
     config: {
         schema: testSchema,
@@ -82,17 +93,19 @@ This guide simplifies the process of creating a custom form dialog using the ImJ
 
 `
 function useImJoyPlugin() {
-  const [api, setApi] = useState(null);
+  
   const [schema, setSchema] = useState({
     "title": "Untitled",
     "description": "No form data is available for display.",
     "type": "object",
   });
   const [uiSchema, setUiSchema] = useState({});
+  const [closeOnSubmit, setCloseOnSubmit] = useState(true);
   const [submitLabel, setSubmitLabel] = useState("Submit");
   const callbackRef = useRef(null);
   const onchangeRef = useRef(null);
   const onerrorRef = useRef(null);
+  const imjoyAPI = useRef(null);
 
   useEffect(() => {
     if (window.self !== window.top && !window.loadImJoy) {
@@ -101,9 +114,9 @@ function useImJoyPlugin() {
         name: "ImJoy JSON Schema Form",
         version: "0.1.0",
         description: "Displaying JSON schema form, powered by react-jsonschema-form",
-      }).then(api => {
-        setApi(api);
-        api.export({
+      }).then(_api => {
+        imjoyAPI.current = _api;
+        _api.export({
           _rintf: true,
           docs,
           setup() { },
@@ -114,21 +127,26 @@ function useImJoyPlugin() {
             if (ctx.config.callback) callbackRef.current = ctx.config.callback;
             if (ctx.config.onchange) onchangeRef.current = ctx.config.onchange;
             if (ctx.config.onerror) onerrorRef.current = ctx.config.onerror;
+            if (ctx.config.close_on_submit) setCloseOnSubmit(ctx.config.close_on_submit);
           },
         });
+        
       }).catch(err => { console.error(err); });
     }
   }, []);
 
-  return { schema, uiSchema, submitLabel, callbackRef, onchangeRef, onerrorRef, api };
+  return { schema, uiSchema, submitLabel, callbackRef, onchangeRef, onerrorRef, imjoyAPI, closeOnSubmit };
 }
 
 function App() {
-  const { schema, uiSchema, submitLabel, callbackRef, onchangeRef, onerrorRef } = useImJoyPlugin();
+  const { schema, uiSchema, submitLabel, callbackRef, onchangeRef, onerrorRef, imjoyAPI, closeOnSubmit } = useImJoyPlugin();
 
   const handleSubmit = useCallback((form) => {
     if (callbackRef.current){
       callbackRef.current(form);
+      if(closeOnSubmit && form.status === "submitted"){
+        imjoyAPI.current.close();
+      }
     }
   }, [callbackRef]);
 
