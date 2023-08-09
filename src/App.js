@@ -3,13 +3,11 @@ import { imjoyRPC } from "imjoy-rpc";
 import Form from 'react-jsonschema-form';
 import validator from '@rjsf/validator-ajv8';
 import './App.css';
+import ReactMarkdown from 'react-markdown';
+
 
 function useImJoyPlugin() {
-  const [schema, setSchema] = useState({
-    "title": "Untitled",
-    "description": "No form data is available for display.",
-    "type": "object",
-  });
+  const [schema, setSchema] = useState(null);
   const [uiSchema, setUiSchema] = useState({});
   const [closeOnSubmit, setCloseOnSubmit] = useState(true);
   const [submitLabel, setSubmitLabel] = useState("Submit");
@@ -57,6 +55,11 @@ function useImJoyPlugin() {
 
 function App() {
   const { schema, uiSchema, submitLabel, callbackRef, onchangeRef, onerrorRef, imjoyAPI, closeOnSubmit, promise } = useImJoyPlugin();
+  const [markdown, setMarkdown] = useState("");
+  useEffect(() => {
+    if(!schema)
+    fetch("https://raw.githubusercontent.com/oeway/imjoy-json-schema-form/main/docs.md").then(res => res.text()).then(setMarkdown);
+  }, [schema]);
 
   const handleSubmit = useCallback((form) => {
     if (callbackRef.current){
@@ -70,7 +73,7 @@ function App() {
     else if(closeOnSubmit && form.status === "submitted"){
       imjoyAPI.current.close();
     }
-  }, [callbackRef, closeOnSubmit, imjoyAPI]);
+  }, [callbackRef, closeOnSubmit, imjoyAPI, promise]);
 
   return (
     <div className="App">
@@ -78,9 +81,10 @@ function App() {
         <div className="row justify-content-center">
           <div className="col-md-8">
             <div className="my-5">
-              <Form schema={schema} uiSchema={uiSchema} validator={validator} onError={(errors)=> onerrorRef.current && onerrorRef.current(errors)} onChange={(e) => onchangeRef.current && onchangeRef.current(e.formData)} onSubmit={handleSubmit}>
+              {schema?(<Form schema={schema} uiSchema={uiSchema} validator={validator} onError={(errors)=> onerrorRef.current && onerrorRef.current(errors)} onChange={(e) => onchangeRef.current && onchangeRef.current(e.formData)} onSubmit={handleSubmit}>
               {callbackRef.current && (<button type="submit" className="btn btn-primary">{submitLabel}</button>)}
-              </Form>
+              </Form>):
+              <ReactMarkdown children={markdown}/>}
             </div>
           </div>
         </div>

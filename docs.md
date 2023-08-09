@@ -1,7 +1,7 @@
-# ImJoy Plugin Form Guide
+# ImJoy JSON Schema Form
 
 ## Introduction
-This guide demonstrates how to use ImJoy plugin functions to create a custom form dialog with fields for name and age.
+This guide demonstrates how to use the imjoy-json-schema-form plugin to create a custom form dialog or window generated from json schema.
 
 ## Steps to Create a Custom Form Dialog
 
