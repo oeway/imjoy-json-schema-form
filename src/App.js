@@ -68,10 +68,14 @@ function App() {
   
     if(promise.current){ 
       promise.current(form);
-      imjoyAPI.current.close();
+      setTimeout(() => {
+        imjoyAPI.current.close();
+      }, 100);
     }
     else if(closeOnSubmit && form.status === "submitted"){
-      imjoyAPI.current.close();
+      setTimeout(() => {
+        imjoyAPI.current.close();
+      }, 100);
     }
   }, [callbackRef, closeOnSubmit, imjoyAPI, promise]);
 
