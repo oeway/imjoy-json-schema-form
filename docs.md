@@ -124,7 +124,7 @@ async def setup():
     fm = await api.showDialog(
         src="https://oeway.github.io/imjoy-json-schema-form/",
         config={
-            "_rintf": true,
+            "_rintf": True,
             "callback": callback,
             "schema": {
                 "title": "Test Form",
@@ -146,7 +146,7 @@ async def setup():
 api.export({"setup": setup})
 ```
 
-Note that we need to add `"_rintf": true,` to be able to run the callback function multiple times.
+Note that we need to add `"_rintf": True,` to be able to run the callback function multiple times.
 
 ## Conclusion
 This guide simplifies the process of creating a custom form dialog using the ImJoy plugin functions `api.createWindow` or `api.showDialog`. You can define a JSON schema to specify the fields and behaviors of the form, and utilize callback functions to handle interactions.

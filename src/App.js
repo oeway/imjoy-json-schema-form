@@ -9,7 +9,7 @@ import ReactMarkdown from 'react-markdown';
 function useImJoyPlugin() {
   const [schema, setSchema] = useState(null);
   const [uiSchema, setUiSchema] = useState({});
-  const [closeOnSubmit, setCloseOnSubmit] = useState(true);
+  const [closeOnSubmit, setCloseOnSubmit] = useState(false);
   const [submitLabel, setSubmitLabel] = useState("Submit");
   const callbackRef = useRef(null);
   const onchangeRef = useRef(null);
@@ -68,14 +68,10 @@ function App() {
   
     if(promise.current){ 
       promise.current(form);
-      setTimeout(() => {
-        imjoyAPI.current.close();
-      }, 100);
+      imjoyAPI.current.close();
     }
     else if(closeOnSubmit && form.status === "submitted"){
-      setTimeout(() => {
-        imjoyAPI.current.close();
-      }, 100);
+      imjoyAPI.current.close();
     }
   }, [callbackRef, closeOnSubmit, imjoyAPI, promise]);
 
